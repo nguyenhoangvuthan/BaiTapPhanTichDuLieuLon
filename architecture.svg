@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 860" role="img" aria-label="Delta Lake Medallion architecture on MinIO with Gold Data Warehouse, ML Data Mart, Spark SQL and ALS">
+<defs>
+  <marker id="arr" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L14,7 L0,14 Z" fill="#64748b"/>
+  </marker>
+  <style>
+    .bg{fill:#fff}
+    .frame{fill:#f8fafc;stroke:#94a3b8;stroke-width:2}
+    .txt{font:600 19px Arial,Helvetica,sans-serif;fill:#1e293b}
+    .small{font:500 14px Arial,Helvetica,sans-serif;fill:#475569}
+    .head{font:700 20px Arial,Helvetica,sans-serif;fill:#0f172a}
+    .arrow{fill:none;stroke:#64748b;stroke-width:2.6;marker-end:url(#arr)}
+    .node{stroke-width:2;rx:13}
+  </style>
+</defs>
+<rect class="bg" width="1000" height="860"/>
+
+<!-- Source and ingestion -->
+<rect x="350" y="20" width="300" height="55" class="node" fill="#f1f5f9" stroke="#64748b"/>
+<text class="txt" text-anchor="middle" x="500" y="54">T-ECD Retail Dataset</text>
+<path class="arrow" d="M500 75 V98"/>
+
+<rect x="350" y="100" width="300" height="55" class="node" fill="#eff6ff" stroke="#3b82f6"/>
+<text class="txt" text-anchor="middle" x="500" y="134">PySpark Ingestion</text>
+<path class="arrow" d="M500 155 V219"/>
+
+<!-- Delta Lake / MinIO frame -->
+<rect class="frame" x="254" y="189" width="492" height="363" rx="18"/>
+<text class="head" text-anchor="start" x="280" y="220">MinIO</text>
+<text class="head" text-anchor="end" x="720" y="220">Delta Lake</text>
+<line x1="278" x2="722" y1="233" y2="233" stroke="#cbd5e1" stroke-width="1.5"/>
+
+<!-- Centered equal-size boxes inside frame -->
+<rect x="350" y="248" width="300" height="58" class="node" fill="#fff7ed" stroke="#d97706"/>
+<text class="txt" text-anchor="middle" x="500" y="271">Bronze</text>
+<text class="small" text-anchor="middle" x="500" y="290">Raw Events</text>
+<path class="arrow" d="M500 306 V321"/>
+
+<rect x="350" y="325" width="300" height="58" class="node" fill="#f1f5f9" stroke="#94a3b8"/>
+<text class="txt" text-anchor="middle" x="500" y="348">Silver</text>
+<text class="small" text-anchor="middle" x="500" y="367">Clean Interactions</text>
+<path class="arrow" d="M500 383 V398"/>
+
+<rect x="350" y="402" width="300" height="58" class="node" fill="#fffbeb" stroke="#ca8a04"/>
+<text class="txt" text-anchor="middle" x="500" y="425">Gold | Data Warehouse</text>
+<text class="small" text-anchor="middle" x="500" y="444">Analytical Delta Tables</text>
+<path class="arrow" d="M500 460 V475"/>
+
+<rect x="350" y="479" width="300" height="58" class="node" fill="#fffbeb" stroke="#ca8a04"/>
+<text class="txt" text-anchor="middle" x="500" y="502">Gold | ML Data Mart</text>
+<text class="small" text-anchor="middle" x="500" y="521">Train / Validation / Test</text>
+
+<!-- Spark SQL Reports with extra distance -->
+<path class="arrow" d="M350 431 H205"/>
+<rect x="20" y="402" width="160" height="58" class="node" fill="#f0fdfa" stroke="#0d9488"/>
+<text class="txt" text-anchor="middle" x="100" y="425">Spark SQL</text>
+<text class="small" text-anchor="middle" x="100" y="444">Reports</text>
+
+<!-- ALS path -->
+<path class="arrow" d="M500 537 V604"/>
+<rect x="350" y="608" width="300" height="58" class="node" fill="#eff6ff" stroke="#3b82f6"/>
+<text class="txt" text-anchor="middle" x="500" y="631">Spark MLlib</text>
+<text class="small" text-anchor="middle" x="500" y="650">Implicit ALS</text>
+<path class="arrow" d="M500 666 V682"/>
+
+<rect x="350" y="686" width="300" height="58" class="node" fill="#f0fdfa" stroke="#0d9488"/>
+<text class="txt" text-anchor="middle" x="500" y="709">Top-N Recommendations</text>
+<text class="small" text-anchor="middle" x="500" y="728">Product Ranking</text>
+<path class="arrow" d="M500 744 V760"/>
+
+<rect x="350" y="764" width="300" height="58" class="node" fill="#f0fdfa" stroke="#0d9488"/>
+<text class="txt" text-anchor="middle" x="500" y="787">Evaluation</text>
+<text class="small" text-anchor="middle" x="500" y="806">Recall@10 | NDCG@10</text>
+</svg>

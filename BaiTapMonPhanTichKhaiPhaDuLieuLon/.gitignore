@@ -1,0 +1,15 @@
+.venv/
+.venv-labs/
+.work/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+nyc_data/
+nyc_data_partitioned/
+aml_data/
+loi_giai/models/
+loi_giai/checkpoints/
+artifacts/
+spark-warehouse/
+metastore_db/
+derby.log
