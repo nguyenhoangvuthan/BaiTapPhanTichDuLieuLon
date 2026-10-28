@@ -13,6 +13,60 @@ Mỗi lời giải notebook đặt ngay sau yêu cầu tương ứng. Mở noteb
 
 ## Môi trường
 
+### Chạy trên máy Windows qua Ubuntu/WSL
+
+Kiểm tra ngày 28/10/2026: Java 27 trên Windows lỗi `jdk.internal.ref.Cleaner`
+khi khởi tạo Spark 4.0.2; Windows cũng chưa có Hadoop native (`winutils.exe`).
+Dùng Ubuntu/WSL với Java 21 để chạy cả đọc/ghi Parquet và lưu mô hình.
+Môi trường WSL tách biệt với Python Windows: cài `pyspark` trên Windows không
+cài thư viện vào WSL và ngược lại.
+
+Thiết lập một lần trong Ubuntu (mở terminal tại thư mục bài tập):
+
+```bash
+sudo apt-get update
+sudo apt-get install -y openjdk-21-jdk-headless python3-venv
+python3 -m venv ~/.venvs/bigdata-labs
+~/.venvs/bigdata-labs/bin/python -m pip install -r loi_giai/requirements.txt
+source loi_giai/kich_hoat_moi_truong.sh
+python loi_giai/tai_du_lieu.py
+```
+
+Môi trường WSL của máy hiện dùng Python 3.14.4, Java 21 và các phiên bản thư viện
+trong `requirements.txt`. Script kích hoạt tìm môi trường này nếu không có
+`.venv-labs/bin/python`; có thể chỉ định môi trường khác bằng `LABS_VENV`.
+Script cũng đặt `SPARK_LOCAL_DIRS=~/.cache/bigdata-labs/spark` để shuffle nằm
+trên ổ đĩa. `/tmp` của Ubuntu hiện là tmpfs chỉ 3,8 GiB: bài AML toàn bộ dữ liệu
+đã gặp `No space left on device` khi dùng mặc định này. Có thể đặt
+`SPARK_LOCAL_DIRS` sang thư mục trên ổ đĩa khác còn dung lượng.
+
+Chạy từ thư mục gốc Git trong PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\BaiTapMonPhanTichKhaiPhaDuLieuLon\loi_giai\chay_wsl.ps1
+```
+
+Hoặc trong Ubuntu, từ thư mục bài tập:
+
+```bash
+source loi_giai/kich_hoat_moi_truong.sh
+python loi_giai/chay_bai_tap.py
+# Chạy riêng sau khi đã kiểm thử:
+python loi_giai/chay_bai_tap.py --only ml --skip-tests
+```
+
+Runner chạy MapReduce, bộ kiểm thử và ba notebook theo thứ tự. Mỗi notebook dùng
+kernel mới từ chính interpreter đã kích hoạt; chỉ ghi đè notebook sau khi chạy
+thành công. Khi lỗi, bản thực thi dở được lưu ở `.work/runs/*.failed.ipynb`;
+log kiểm thử và trạng thái từng lần chạy cũng ở `.work/runs/`.
+
+Để chạy từng cell trong VS Code, chọn **WSL: Reopen Folder in WSL**, chọn
+interpreter `~/.venvs/bigdata-labs/bin/python`, rồi kernel **Python (labs)**.
+Kernel này được runner đăng ký cùng `JAVA_HOME`, Python worker và thư mục shuffle.
+Không chọn kernel Python Windows cho phiên chạy WSL.
+
+### Thiết lập Linux với Python 3.12
+
 Python **3.12**, Java **21**, PySpark **4.0.2**, GraphFrames **0.12.3**. Các phiên bản Python được ghi trong [requirements.txt](requirements.txt).
 Spark và GraphFrames cần Java và tải các thư viện Maven khi khởi tạo lần đầu. Không dùng gói GraphFrames 0.8.3 cho Spark 4.
 
@@ -34,7 +88,7 @@ java -version
   --env SPARK_LOCAL_IP "$SPARK_LOCAL_IP"
 ```
 
-Script tìm Java 17/21 đã cài, bỏ qua `JAVA_HOME` không hợp lệ và chọn Python của `.venv-labs`. Không đặt `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` nếu thư mục đó chưa tồn tại. Với checkout đã sửa ngày 28/10/2026, JDK Temurin 21 đã được đặt tại `.work/java-21/`; đây là file cục bộ, không nằm trong Git. Lệnh đăng ký kernel ở trên lưu cả cấu hình Java/Python, dùng được khi chọn kernel `labs` trong IDE. Kernel đang chạy cần được khởi động lại sau khi đổi cấu hình.
+Script tìm Java 17/21 đã cài, bỏ qua `JAVA_HOME` không hợp lệ và chọn Python của `.venv-labs`. Không đặt `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` nếu thư mục đó chưa tồn tại. JDK giải nén tại `.work/java-21/` là file cục bộ, không nằm trong Git; checkout mới cần cài Java hoặc tự đặt JDK vào đây. Lệnh đăng ký kernel ở trên lưu cả cấu hình Java/Python, dùng được khi chọn kernel `labs` trong IDE. Kernel đang chạy cần được khởi động lại sau khi đổi cấu hình.
 
 Khi mở thư mục gốc Git `BaiTapPhanTichDuLieuLon/` trong VS Code, `.vscode/settings.json` cấu hình interpreter và tìm môi trường `.venv-labs` trong thư mục bài tập. Nếu IDE còn giữ `/bin/python` hoặc hiện `Unable to handle /bin/python`, chạy **Python: Select Interpreter** → **Enter interpreter path…** và chọn `BaiTapMonPhanTichKhaiPhaDuLieuLon/.venv-labs/bin/python` bên trong thư mục gốc Git, rồi chạy **Developer: Reload Window**. Với notebook chọn riêng kernel **Python (labs)**. Không thay symlink Python hệ thống để sửa lỗi chọn môi trường của IDE.
 

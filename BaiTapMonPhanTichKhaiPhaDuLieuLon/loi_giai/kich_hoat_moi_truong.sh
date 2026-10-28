@@ -6,15 +6,20 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
 fi
 
 _labs_activate() {
-    local labs_root labs_candidate labs_version labs_java_home=''
+    local labs_root labs_candidate labs_version labs_venv labs_java_home=''
     labs_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)" || return 1
-    if [[ ! -x "$labs_root/.venv-labs/bin/python" ]]; then
-        echo "Chưa có môi trường Python: $labs_root/.venv-labs" >&2
+    labs_venv="${LABS_VENV:-$labs_root/.venv-labs}"
+    if [[ -z "${LABS_VENV:-}" && ! -x "$labs_venv/bin/python" && -x "$HOME/.venvs/bigdata-labs/bin/python" ]]; then
+        labs_venv="$HOME/.venvs/bigdata-labs"
+    fi
+    if [[ ! -x "$labs_venv/bin/python" ]]; then
+        echo "Chưa có môi trường Python: $labs_venv (có thể đặt LABS_VENV)" >&2
         return 1
     fi
 
     # Bỏ qua JAVA_HOME sai hoặc Java ngoài các phiên bản Spark 4.0 hỗ trợ.
     for labs_candidate in "${JAVA_HOME:-}" "$labs_root/.work/java-21" /usr/lib/jvm/*; do
+        [[ -n "$labs_candidate" ]] || continue
         [[ -x "$labs_candidate/bin/java" ]] || continue
         labs_version="$("$labs_candidate/bin/java" -version 2>&1)" || continue
         labs_version="$(sed -n 's/.*version "\([0-9]*\).*/\1/p' <<< "$labs_version")"
@@ -30,12 +35,15 @@ _labs_activate() {
         return 1
     fi
 
-    source "$labs_root/.venv-labs/bin/activate" || return 1
+    source "$labs_venv/bin/activate" || return 1
     export JAVA_HOME="$labs_java_home"
     export PATH="$JAVA_HOME/bin:$PATH"
-    export PYSPARK_PYTHON="$labs_root/.venv-labs/bin/python"
+    export PYSPARK_PYTHON="$labs_venv/bin/python"
     export SPARK_LOCAL_IP=127.0.0.1
-    printf 'JAVA_HOME=%s\nPYSPARK_PYTHON=%s\n' "$JAVA_HOME" "$PYSPARK_PYTHON"
+    # Ubuntu/WSL có thể mount /tmp bằng tmpfs nhỏ; shuffle phải nằm trên đĩa.
+    export SPARK_LOCAL_DIRS="${SPARK_LOCAL_DIRS:-$HOME/.cache/bigdata-labs/spark}"
+    mkdir -p "$SPARK_LOCAL_DIRS" || return 1
+    printf 'JAVA_HOME=%s\nPYSPARK_PYTHON=%s\nSPARK_LOCAL_DIRS=%s\n' "$JAVA_HOME" "$PYSPARK_PYTHON" "$SPARK_LOCAL_DIRS"
 }
 
 if _labs_activate; then

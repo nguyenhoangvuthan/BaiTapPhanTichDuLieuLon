@@ -83,4 +83,23 @@ class AMLGraphTests(unittest.TestCase):
         self.assertAlmostEqual(result[0].fee_at_B,.01)
         self.assertAlmostEqual(result[0].fee_at_C,.05)
 
+    def test_smurfing_join_order_preserves_results_and_time_boundary(self):
+        ctx=self.load_csv([self.tx('00:00','A','C'), self.tx('00:30','B','C'),
+            self.tx('01:59','C','D'), self.tx('02:00','C','E'),
+            self.tx('00:20','A','C'), self.tx('00:10','C','C')])
+        source=next(s for s in self.cells if 'smurfing=(' in s)
+        exec(source,ctx)
+        optimized=ctx['smurfing']
+        original_source=source.replace('(a)-[e1]->(c); (c)-[e3]->(d); (b)-[e2]->(c)',
+                                       '(a)-[e1]->(c); (b)-[e2]->(c); (c)-[e3]->(d)')
+        exec(original_source,ctx)
+        # Compare multisets: repeated transactions must retain their multiplicity.
+        original=ctx['smurfing'].select(*optimized.columns)
+        self.assertEqual(optimized.exceptAll(original).count(),0)
+        self.assertEqual(original.exceptAll(optimized).count(),0)
+        rows=optimized.select(self.F.col('e1.timestamp').alias('first_in'),
+                              self.F.col('d.id').alias('destination')).collect()
+        self.assertEqual(len(rows),3)
+        self.assertFalse(any(r.first_in.minute==0 and '"E"' in r.destination for r in rows))
+
 if __name__=='__main__':unittest.main()
