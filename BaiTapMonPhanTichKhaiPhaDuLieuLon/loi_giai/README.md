@@ -16,13 +16,27 @@ Mỗi lời giải notebook đặt ngay sau yêu cầu tương ứng. Mở noteb
 Python **3.12**, Java **21**, PySpark **4.0.2**, GraphFrames **0.12.3**. Các phiên bản Python được ghi trong [requirements.txt](requirements.txt).
 Spark và GraphFrames cần Java và tải các thư viện Maven khi khởi tạo lần đầu. Không dùng gói GraphFrames 0.8.3 cho Spark 4.
 
-Môi trường `.venv-labs` đã được cài sẵn trong dự án hiện tại. Để tạo lại ở máy khác, từ thư mục gốc:
+Từ thư mục `BaiTapMonPhanTichKhaiPhaDuLieuLon/` (bên trong thư mục gốc Git), tạo môi trường nếu chưa có:
 
 ```bash
 python3.12 -m venv .venv-labs
 .venv-labs/bin/python -m pip install -r loi_giai/requirements.txt
-.venv-labs/bin/python -m ipykernel install --user --name labs --display-name 'Python (labs)'
 ```
+
+Cần cài Java trước khi chạy Spark. Trên Ubuntu có thể dùng `sudo apt-get install openjdk-21-jdk-headless`; hoặc giải nén JDK 21 vào `.work/java-21/` sao cho có `.work/java-21/bin/java`.
+Trong mỗi terminal chạy bài, kích hoạt bằng:
+
+```bash
+source loi_giai/kich_hoat_moi_truong.sh
+java -version
+.venv-labs/bin/python -m ipykernel install --user --name labs --display-name 'Python (labs)' \
+  --env JAVA_HOME "$JAVA_HOME" --env PYSPARK_PYTHON "$PYSPARK_PYTHON" \
+  --env SPARK_LOCAL_IP "$SPARK_LOCAL_IP"
+```
+
+Script tìm Java 17/21 đã cài, bỏ qua `JAVA_HOME` không hợp lệ và chọn Python của `.venv-labs`. Không đặt `JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` nếu thư mục đó chưa tồn tại. Với checkout đã sửa ngày 28/10/2026, JDK Temurin 21 đã được đặt tại `.work/java-21/`; đây là file cục bộ, không nằm trong Git. Lệnh đăng ký kernel ở trên lưu cả cấu hình Java/Python, dùng được khi chọn kernel `labs` trong IDE. Kernel đang chạy cần được khởi động lại sau khi đổi cấu hình.
+
+Khi mở thư mục gốc Git `BaiTapPhanTichDuLieuLon/` trong VS Code, `.vscode/settings.json` cấu hình interpreter và tìm môi trường `.venv-labs` trong thư mục bài tập. Nếu IDE còn giữ `/bin/python` hoặc hiện `Unable to handle /bin/python`, chạy **Python: Select Interpreter** → **Enter interpreter path…** và chọn `BaiTapMonPhanTichKhaiPhaDuLieuLon/.venv-labs/bin/python` bên trong thư mục gốc Git, rồi chạy **Developer: Reload Window**. Với notebook chọn riêng kernel **Python (labs)**. Không thay symlink Python hệ thống để sửa lỗi chọn môi trường của IDE.
 
 Trên Windows dùng `.venv-labs\Scripts\python.exe` thay cho `.venv-labs/bin/python`, và chọn kernel `labs` trong VS Code/Jupyter.
 Các notebook tự đặt Python worker bằng Python của kernel để tránh trộn Python 3.12 và 3.14.

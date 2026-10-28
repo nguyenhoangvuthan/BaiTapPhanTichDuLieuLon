@@ -1,0 +1,15 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/BaiTapMonPhanTichKhaiPhaDuLieuLon/.venv-labs/bin/python",
+    "python-envs.workspaceSearchPaths": [
+        "./.venv",
+        "./*/.venv",
+        "./BaiTapMonPhanTichKhaiPhaDuLieuLon/.venv-labs"
+    ],
+    "python-envs.pythonProjects": [
+        {
+            "path": "./BaiTapMonPhanTichKhaiPhaDuLieuLon",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
+}
