@@ -20,7 +20,7 @@ class AMLGraphTests(unittest.TestCase):
             .config('spark.ui.enabled','false').config('spark.sql.shuffle.partitions','2')
             .config('spark.jars.packages','io.graphframes:graphframes-spark4_2.13:0.12.3').getOrCreate())
         cls.spark.sparkContext.setLogLevel('ERROR')
-        cls.cells=[c.source for c in nbformat.read(ROOT/'loi_giai/04_Lab4_GianLan.ipynb',as_version=4).cells if c.cell_type=='code']
+        cls.cells=[c.source for c in nbformat.read(ROOT/'loi_giai/04_Lab4_GianLan_NguyenHoangVuThan.ipynb',as_version=4).cells if c.cell_type=='code']
         cls.GraphFrame=GraphFrame;cls.F=F
 
     @classmethod
@@ -85,7 +85,7 @@ class AMLGraphTests(unittest.TestCase):
 
     def test_smurfing_join_order_preserves_results_and_time_boundary(self):
         ctx=self.load_csv([self.tx('00:00','A','C'), self.tx('00:30','B','C'),
-            self.tx('01:59','C','D'), self.tx('02:00','C','E'),
+            self.tx('01:59','C','D',1960), self.tx('02:00','C','E',1960),
             self.tx('00:20','A','C'), self.tx('00:10','C','C')])
         source=next(s for s in self.cells if 'smurfing=(' in s)
         exec(source,ctx)
@@ -101,5 +101,16 @@ class AMLGraphTests(unittest.TestCase):
                               self.F.col('d.id').alias('destination')).collect()
         self.assertEqual(len(rows),3)
         self.assertFalse(any(r.first_in.minute==0 and '"E"' in r.destination for r in rows))
+
+    def test_smurfing_requires_same_currency_and_forwarding_most_incoming_money(self):
+        ctx=self.load_csv([self.tx('00:00','A','C'),self.tx('00:30','B','C'),
+            self.tx('01:00','C','D',1000),       # Chỉ chuyển nửa tổng tiền vào.
+            self.tx('01:00','C','E',1960,'EUR'), # Đúng tỷ lệ nhưng khác tiền tệ.
+            self.tx('01:00','C','F',1960),       # Chuyển tiếp 98% cùng tiền tệ.
+            self.tx('01:00','C','G',2100)])      # Vượt khoản tiền ghép vào.
+        exec(next(s for s in self.cells if 'smurfing=(' in s),ctx)
+        rows=ctx['smurfing'].select(self.F.col('d.id').alias('destination')).collect()
+        self.assertEqual(len(rows),1)
+        self.assertIn('"F"',rows[0].destination)
 
 if __name__=='__main__':unittest.main()

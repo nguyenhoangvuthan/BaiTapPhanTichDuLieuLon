@@ -21,7 +21,7 @@ class MLMetricsTests(unittest.TestCase):
                 (0.,Vectors.dense([40.,60.]),Vectors.dense([.4,.6])),
                 (1.,Vectors.dense([1.,9.]),Vectors.dense([.1,.9]))
             ],['high_tip','rawPrediction','probability'])
-            n=nbformat.read(ROOT/'loi_giai/03_Lab2_ML.ipynb',as_version=4)
+            n=nbformat.read(ROOT/'loi_giai/03_Lab2_ML_NguyenHoangVuThan.ipynb',as_version=4)
             source=next(c.source for c in n.cells if c.cell_type=='code' and 'evaluator_auc = BinaryClassificationEvaluator' in c.source)
             statement=next(node for node in ast.parse(source).body if isinstance(node,ast.Assign)
                            and any(isinstance(t,ast.Name) and t.id=='evaluator_auc' for t in node.targets))

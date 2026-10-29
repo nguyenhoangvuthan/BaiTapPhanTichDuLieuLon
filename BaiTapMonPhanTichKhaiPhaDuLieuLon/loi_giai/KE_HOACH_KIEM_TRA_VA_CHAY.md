@@ -1,5 +1,34 @@
 # Kiểm tra lời giải và kế hoạch chạy code
 
+## Hoàn tất bổ sung lời giải — 30/10/2026
+
+- Ba notebook đã chạy đầy đủ trong ngày 29/10: Lab1 **27/27 ô mã**, Lab2 **26/26**, Lab4 **20/20**; không có output lỗi. Đã lưu bảng kết quả và hình trong notebook.
+- **13 kiểm thử qua**, gồm kiểm tra bổ sung Scatter-Gather phải chuyển tiếp gần đủ tổng tiền nhận và giữ cùng tiền tệ.
+- MapReduce bổ sung dữ liệu trung gian, chứng minh tính đúng và kiểm tra hàm mục tiêu K-Means. Lab1 bổ sung kiểm tra mean/median/P90, khóa nối, tổng pivot và benchmark hai nguồn Parquet.
+- Lab2 bổ sung baseline lớp phổ biến, chỉ số từng lớp, kiểm tra thang đo KMeans và so nhóm đặc trưng trên cùng validation.
+- Lab4 bổ sung độ nhạy fan-in, ví dụ cảnh báo, bảng ngưỡng validation, feature importance và kịch bản chi phí. Ngưỡng mới là **0,8** cho cơ sở, **0,9** cho đồ thị; bảng tóm tắt đã cập nhật theo lượt chạy này.
+- Log hiện tại: `.work/upgrade-tests.log`, `.work/upgrade-sql-final.log`, `.work/upgrade-ml.log`, `.work/upgrade-aml.log`. Chi tiết số liệu mới nằm trong README và các notebook.
+
+Các phần từ mục cập nhật **28/10/2026** trở xuống là lịch sử kiểm tra, gồm những nhận xét và kế hoạch đã được xử lý; không dùng các ô chưa đánh dấu hoặc số liệu cũ ở đó làm trạng thái hiện tại.
+
+---
+
+## Cập nhật hoàn tất Lab4 — 28/10/2026
+
+Các nhận xét P1 và trạng thái Lab4 ở lượt kiểm tra cũ bên dưới đã được xử lý:
+
+- Đã chạy toàn bộ 5,078,345 giao dịch, đủ 16/16 ô mã, gồm Scatter-Gather; notebook hoàn thành trong 467,9 giây.
+- Đã thêm `aml_model.py`, lưu/nạp pipeline, snapshot, ngưỡng validation 0,8, mốc thời gian và hash dữ liệu.
+- Kiểm tra 31 giao dịch trước/sau lưu-nạp, gồm tài khoản mới: không sai khác về xác suất hoặc nhãn.
+- Toàn bộ 12 kiểm thử qua, gồm kiểm thử ngưỡng không mặc định, đúng biên `>=`, mô hình cơ sở và mô hình đồ thị.
+- Mẫu và toàn bộ có thư mục mô hình riêng. Đã cập nhật tóm tắt theo kết quả đầy đủ; accuracy tăng nhưng PR-AUC/recall giảm.
+- Môi trường lượt hoàn tất: Python 3.12.16, Java 21, các thư viện theo `requirements.txt`.
+- Notebook: `loi_giai/04_Lab4_GianLan_NguyenHoangVuThan.ipynb`; mô hình: `loi_giai/models/aml_full/`; log: `.work/aml-full-run.log`, `.work/tests-lab4.log`.
+
+Phần còn lại lưu bằng chứng và kế hoạch của **lượt kiểm tra trước khi sửa**; các mục chưa đánh dấu ở đó không mô tả trạng thái Lab4 hiện tại.
+
+---
+
 Ngày kiểm tra: **28/10/2026**. Mã nguồn tại commit `0ea0092`.
 
 **Cập nhật sau khi sửa lỗi `JAVA_GATEWAY_EXITED`:** đã cài JDK Temurin 21.0.13 cục bộ tại `.work/java-21/`, xác minh SHA-256, thêm `loi_giai/kich_hoat_moi_truong.sh` và cấu hình kernel `labs` dùng đúng Java/Python. Đã chạy lại **10/10 kiểm thử qua** (18,155 giây). Các mô tả thiếu môi trường và test lỗi import bên dưới ghi lại trạng thái ở lượt kiểm tra ban đầu; chưa chạy lại các notebook phân tích đầy đủ. Lỗi lưu ngưỡng Lab4 vẫn là việc riêng cần xử lý.
@@ -16,7 +45,7 @@ Tài liệu này bổ sung nhận xét và kế hoạch; không sửa các lời
 
 ### P1 — Ngưỡng suy luận Lab4 chưa được lưu cùng mô hình
 
-Vị trí: `04_Lab4_GianLan.ipynb`, ô code có `def class_metrics` và vòng lặp huấn luyện (cell index 32, đánh số từ 0).
+Vị trí: `04_Lab4_GianLan_NguyenHoangVuThan.ipynb`, ô code có `def class_metrics` và vòng lặp huấn luyện (cell index 32, đánh số từ 0).
 
 `best_threshold` chỉ được dùng khi tính metric. Lệnh lưu cuối ô chỉ ghi `aml_rf_history_pipeline` và `aml_history_snapshot`, không lưu ngưỡng hay cấu hình ngưỡng vào classifier. Theo hướng dẫn hiện tại, nạp pipeline rồi `transform` sẽ lấy nhãn mặc định của classifier, không tái tạo quyết định theo ngưỡng validation.
 
@@ -140,7 +169,7 @@ mkdir -p "$RUN_DIR/lab1" "$RUN_DIR/ml-sample" "$RUN_DIR/aml-sample" "$RUN_DIR/fu
 
 .venv-labs/bin/jupyter nbconvert --execute --to notebook \
   --ExecutePreprocessor.kernel_name=labs --ExecutePreprocessor.timeout=1800 \
-  --output-dir="$RUN_DIR/lab1" loi_giai/02_Lab1_SparkSQL.ipynb \
+  --output-dir="$RUN_DIR/lab1" loi_giai/02_Lab1_SparkSQL_NguyenHoangVuThan.ipynb \
   >"$RUN_DIR/lab1.log" 2>&1
 ```
 
@@ -161,12 +190,12 @@ Lab1 chưa có biến tỷ lệ mẫu. Không thêm mẫu ngẫu nhiên trực t
 ```bash
 ML_FRACTION=0.02 .venv-labs/bin/jupyter nbconvert --execute --to notebook \
   --ExecutePreprocessor.kernel_name=labs --ExecutePreprocessor.timeout=1800 \
-  --output-dir="$RUN_DIR/ml-sample" loi_giai/03_Lab2_ML.ipynb \
+  --output-dir="$RUN_DIR/ml-sample" loi_giai/03_Lab2_ML_NguyenHoangVuThan.ipynb \
   >"$RUN_DIR/ml-sample.log" 2>&1
 
 AML_FRACTION=0.02 .venv-labs/bin/jupyter nbconvert --execute --to notebook \
   --ExecutePreprocessor.kernel_name=labs --ExecutePreprocessor.timeout=1800 \
-  --output-dir="$RUN_DIR/aml-sample" loi_giai/04_Lab4_GianLan.ipynb \
+  --output-dir="$RUN_DIR/aml-sample" loi_giai/04_Lab4_GianLan_NguyenHoangVuThan.ipynb \
   >"$RUN_DIR/aml-sample.log" 2>&1
 ```
 
@@ -183,12 +212,12 @@ Chỉ chuyển sang đây khi các bước trước qua. Với AML, tăng thử 
 ```bash
 ML_FRACTION=1.0 .venv-labs/bin/jupyter nbconvert --execute --to notebook \
   --ExecutePreprocessor.kernel_name=labs --ExecutePreprocessor.timeout=1800 \
-  --output-dir="$RUN_DIR/full" loi_giai/03_Lab2_ML.ipynb \
+  --output-dir="$RUN_DIR/full" loi_giai/03_Lab2_ML_NguyenHoangVuThan.ipynb \
   >"$RUN_DIR/ml-full.log" 2>&1
 
 AML_FRACTION=1.0 .venv-labs/bin/jupyter nbconvert --execute --to notebook \
   --ExecutePreprocessor.kernel_name=labs --ExecutePreprocessor.timeout=1800 \
-  --output-dir="$RUN_DIR/full" loi_giai/04_Lab4_GianLan.ipynb \
+  --output-dir="$RUN_DIR/full" loi_giai/04_Lab4_GianLan_NguyenHoangVuThan.ipynb \
   >"$RUN_DIR/aml-full.log" 2>&1
 ```
 

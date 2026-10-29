@@ -13,9 +13,9 @@ from nbclient import NotebookClient
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOKS = {
-    'sql': '02_Lab1_SparkSQL.ipynb',
-    'ml': '03_Lab2_ML.ipynb',
-    'aml': '04_Lab4_GianLan.ipynb',
+    'sql': '02_Lab1_SparkSQL_NguyenHoangVuThan.ipynb',
+    'ml': '03_Lab2_ML_NguyenHoangVuThan.ipynb',
+    'aml': '04_Lab4_GianLan_NguyenHoangVuThan.ipynb',
 }
 
 
